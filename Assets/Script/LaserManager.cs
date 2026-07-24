@@ -40,6 +40,16 @@ public class LaserManager : MonoBehaviour
         RecalculatePath();
     }
 
+    private void OnEnable()
+    {
+        MirrorManager.OnMirrorChanged += RecalculatePath;
+    }
+
+    private void OnDisable()
+    {
+        MirrorManager.OnMirrorChanged -= RecalculatePath;
+    }
+
     public void RecalculatePath()
     {
         _points.Clear();
