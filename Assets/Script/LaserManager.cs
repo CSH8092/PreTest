@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using DG.Tweening;
 using TMPro;
 using UnityEngine;
 
@@ -21,24 +20,14 @@ public class LaserManager : MonoBehaviour
     [SerializeField] private float laserOffset = 0.05f; // laser 여유 값
 
     [Header("Text")]
-    [SerializeField] private TextMeshPro text_current;
+    [SerializeField] private TextMeshProUGUI text_count;
+    [SerializeField] private RectTransform rt_textCurrent2D;
     [SerializeField] private Transform tr_upper;
     [SerializeField] private Camera cam_main;
-    [SerializeField] private float textHeightOffset = 5f;
+    [SerializeField] private float yOffset = 80f;
 
-    [Header("MaxBounce Color")]
-    [SerializeField] private Color color_maxBounce = Color.red;
-    [SerializeField] private float emissionIntensity_maxBounce = 6f;
-    [SerializeField] private float colorTweenDuration = 2f;
-
-    [Header("MaxBounce Shake")]
-    [SerializeField] private float shakeDuration = 0.4f;
-    [SerializeField] private float shakePositionStrength = 0.15f;
-    [SerializeField] private float shakeScaleStrength = 0.25f;
-    [SerializeField] private int shakeVibrato = 10;
-
-    [Header("MaxBounce Particle")]
-    [SerializeField] private ReceiverParticleEffet prefab_effect;
+    [Header("MaxBounce")]
+    [SerializeField] private HighlightEffect effect_upper;
 
     private int _wallLayer;
     private int _mirrorLayer;
@@ -46,18 +35,6 @@ public class LaserManager : MonoBehaviour
     private int _hitMask;
 
     private readonly List<Vector3> _points = new List<Vector3>();
-
-    private Material _matUpper;
-    private ReceiverParticleEffet _particleEffect;
-
-    private Color _originalBaseColor;
-    private Color _originalEmissionColor;
-    private Vector3 _originalLocalPosition;
-    private Vector3 _originalLocalScale;
-
-    private float _emissionIntensity;
-    private Tween _colorTween;
-    private Tween _emissionTween;
 
     [Header("Debug")]
     [SerializeField] private ReceiverManager currentReceiver;
@@ -80,18 +57,6 @@ public class LaserManager : MonoBehaviour
         _mirrorLayer = LayerMask.NameToLayer(ConstData.MirrorLayer);
         _receiverLayer = LayerMask.NameToLayer(ConstData.ReceiverLayer);
         _hitMask = (1 << _wallLayer) | (1 << _mirrorLayer) | (1 << _receiverLayer);
-
-        Renderer rendererUpper = tr_upper.GetComponent<Renderer>();
-        _matUpper = rendererUpper.material;
-        _originalBaseColor = _matUpper.GetColor("_BaseColor");
-        _originalEmissionColor = _matUpper.GetColor("_EmissionColor");
-        _originalLocalPosition = tr_upper.localPosition;
-        _originalLocalScale = tr_upper.localScale;
-
-        if (prefab_effect != null)
-        {
-            _particleEffect = Instantiate(prefab_effect, tr_upper.position, Quaternion.identity, tr_upper);
-        }
     }
 
     private void Start()
@@ -103,8 +68,8 @@ public class LaserManager : MonoBehaviour
 
     private void UpdateTextTransform()
     {
-        text_current.transform.position = tr_upper.position + Vector3.up * textHeightOffset;
-        text_current.transform.rotation = cam_main.transform.rotation;
+        Vector3 screenPos = cam_main.WorldToScreenPoint(tr_upper.position);
+        rt_textCurrent2D.position = screenPos + Vector3.up * yOffset;
     }
 
     private void OnEnable()
@@ -176,7 +141,8 @@ public class LaserManager : MonoBehaviour
         currentReceiver = hitReceiver;
         currentBounceCount = mirrorBounces;
 
-        text_current.text = isMaxBounce ? "Max Bounce Warning!" : $"{mirrorBounces}/{maxMirrorBounces}";
+        text_count.text = $"{mirrorBounces}/{maxMirrorBounces}";
+        text_count.color = isMaxBounce ? Color.red : Color.black;
 
         SetState(isMaxBounce ? EState.MaxBounce : EState.Normal);
 
@@ -196,59 +162,11 @@ public class LaserManager : MonoBehaviour
 
         if (currentState == EState.MaxBounce)
         {
-            PlayMaxBounceEffect();
+            effect_upper.Play();
         }
         else
         {
-            StopMaxBounceEffect();
+            effect_upper.Stop();
         }
-    }
-
-    private void PlayMaxBounceEffect()
-    {
-        _colorTween?.Kill();
-        _emissionTween?.Kill();
-
-        _matUpper.EnableKeyword("_EMISSION");
-        _colorTween = _matUpper.DOColor(color_maxBounce, "_BaseColor", colorTweenDuration);
-        _emissionTween = DOTween.To(() => _emissionIntensity, SetEmissionIntensity, emissionIntensity_maxBounce, colorTweenDuration);
-
-        TryStartShakeLoop();
-        _particleEffect?.Play();
-    }
-
-    private void TryStartShakeLoop()
-    {
-        if (currentState != EState.MaxBounce)
-        {
-            // 원상복귀
-            tr_upper.DOKill();
-            tr_upper.localPosition = _originalLocalPosition;
-            tr_upper.localScale = _originalLocalScale;
-            return;
-        }
-
-        tr_upper.DOShakePosition(shakeDuration, shakePositionStrength, shakeVibrato).OnComplete(TryStartShakeLoop);
-        tr_upper.DOShakeScale(shakeDuration, shakeScaleStrength, shakeVibrato);
-    }
-
-    private void SetEmissionIntensity(float intensity)
-    {
-        _emissionIntensity = intensity;
-        _matUpper.SetColor("_EmissionColor", color_maxBounce * Mathf.Pow(2f, intensity));
-    }
-
-    private void StopMaxBounceEffect()
-    {
-        _colorTween?.Kill();
-        _emissionTween?.Kill();
-
-        _matUpper.SetColor("_BaseColor", _originalBaseColor);
-        _matUpper.SetColor("_EmissionColor", _originalEmissionColor);
-        _matUpper.DisableKeyword("_EMISSION");
-        _emissionIntensity = 0f;
-
-        // 현재 진행 중인 사이클 끝내고 종료
-        _particleEffect?.StopLoop();
     }
 }

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class ReceiverParticleEffet : MonoBehaviour
+public class ParticleEffect : MonoBehaviour
 {
     [SerializeField] private Material mat_particle;
 

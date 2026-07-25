@@ -3457,6 +3457,7 @@ MonoBehaviour:
   volume_global: {fileID: 832575518}
   vignetteIntensity_success: 0.6
   vignetteIntensity_default: 0.2
+  vignetteTweenDuration: 0.5
 --- !u!4 &5539928314570001
 Transform:
   m_ObjectHideFlags: 0
@@ -3480,10 +3481,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 2064494201}
     m_Modifications:
-    - target: {fileID: 3142412895105623668, guid: 067fbde3b3069df49a9a14fb12b114d7, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
     - target: {fileID: 3566560226398133025, guid: 067fbde3b3069df49a9a14fb12b114d7, type: 3}
       propertyPath: m_LocalPosition.x
       value: -7.6800003
@@ -3531,10 +3528,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 584766340318256618, guid: 067fbde3b3069df49a9a14fb12b114d7, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 067fbde3b3069df49a9a14fb12b114d7, type: 3}
 --- !u!1001 &6736294800129099461
 PrefabInstance:

@@ -46,8 +46,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ReceiverManager
   currentState: 0
-  prefab_effect: {fileID: 2017006980203272, guid: d53f987f04a166e3e1f0069b618fb11d,
-    type: 3}
+  effect: {fileID: 5467992216489816851}
 --- !u!1 &8686665157975014494
 GameObject:
   m_ObjectHideFlags: 0
@@ -60,6 +59,7 @@ GameObject:
   - component: {fileID: 7363838923963343592}
   - component: {fileID: 4328539654641586350}
   - component: {fileID: 3828663647578739171}
+  - component: {fileID: 5467992216489816851}
   m_Layer: 7
   m_Name: Sphere
   m_TagString: Untagged
@@ -159,3 +159,23 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &5467992216489816851
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8686665157975014494}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 142d0d26f3d6e3f488e76fefaf5343f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HighlightEffect
+  color: {r: 1, g: 1, b: 1, a: 1}
+  emissionIntensity: 6
+  colorTweenDuration: 2
+  shakeDuration: 0.4
+  shakePositionStrength: 0.15
+  shakeScaleStrength: 0.25
+  shakeVibrato: 10
+  prefab_effect: {fileID: 2017006980203272, guid: d53f987f04a166e3e1f0069b618fb11d, type: 3}
