@@ -139,7 +139,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 3313976052852523358}
   m_Father: {fileID: 0}
@@ -157,3 +157,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MirrorController
   editMode: 0
+  mat_origin: {fileID: 2100000, guid: 9ec57bd73b5dc7b4696c0805603fdd28, type: 2}
+  mat_highlight1: {fileID: 2100000, guid: fe84ab5dad73578f8a47ff04ab099a50, type: 2}
+  mat_highlight2: {fileID: 2100000, guid: 4ea8888ed00d5e944a2dde955ffdc2c3, type: 2}

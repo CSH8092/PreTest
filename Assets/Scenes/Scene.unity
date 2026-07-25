@@ -1118,7 +1118,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 586847089921060414, guid: f70d0b992707a3745930a151f2275864, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.96
+      value: 0.57
       objectReference: {fileID: 0}
     - target: {fileID: 586847089921060414, guid: f70d0b992707a3745930a151f2275864, type: 3}
       propertyPath: m_LocalPosition.z
@@ -2565,6 +2565,10 @@ MonoBehaviour:
   cam_main: {fileID: 330585545}
   tr_mirrorRoot: {fileID: 187196147}
   maxMirrors: 30
+  gizmoMode: 1
+  dragRotateSpeed: 0.2
+  wheelRotateSpeed: 1
+  currentSelectedMirror: {fileID: 0}
 --- !u!1 &2064494200
 GameObject:
   m_ObjectHideFlags: 0

@@ -4,7 +4,15 @@ using UnityEngine.InputSystem;
 
 public class MirrorManager : MonoSingleton<MirrorManager>
 {
+    public enum EGizmoMode
+    {
+        XRot,
+        YRot
+    }
+
     public static event Action OnMirrorChanged;
+
+    public EGizmoMode GizmoMode => gizmoMode;
 
     [SerializeField] private GameObject obj_mirrorPrefab;
     [SerializeField] private Camera cam_main;
@@ -13,10 +21,19 @@ public class MirrorManager : MonoSingleton<MirrorManager>
     [Header("Settings")]
     [SerializeField] private int maxMirrors = 30;
 
+    [Header("Gizmo")]
+    [SerializeField] private EGizmoMode gizmoMode = EGizmoMode.XRot;
+    [SerializeField] private float dragRotateSpeed = 0.2f;
+    [SerializeField] private float wheelRotateSpeed = 1f;
+
+    [Header("Debug")]
+    [SerializeField] private MirrorController currentSelectedMirror;
+
     private int _wallMask;
     private int _mirrorMask;
     private int _spawnedCount;
-    private MirrorController _selectedMirror;
+    private bool _isCanMirrorPosition;
+    private bool _isCanMirrorRotation;
 
     protected override void Awake()
     {
@@ -33,20 +50,131 @@ public class MirrorManager : MonoSingleton<MirrorManager>
 
     private void Update()
     {
+        // Mirror 생성
         if (Keyboard.current.mKey.wasPressedThisFrame)
         {
             CreateMirror();
         }
 
-        if (Mouse.current.leftButton.wasPressedThisFrame)
-        {
-            EditMirror();
-        }
-
+        // Mirror 모두 제거
         if (Keyboard.current.cKey.wasPressedThisFrame)
         {
             AllClearMirror();
         }
+
+        // 선택된 Mirror 제거
+        if (Keyboard.current.deleteKey.wasPressedThisFrame)
+        {
+            DeleteMirror();
+        }
+
+        // 회전축 모드 변경
+        if (Keyboard.current.tabKey.wasPressedThisFrame)
+        {
+            ChangeGizmoMode();
+        }
+
+        // 좌 클릭 이벤트
+        if (Mouse.current.leftButton.wasPressedThisFrame)
+        {
+            MirrorController hitMirror = EditMirror();
+
+            if (hitMirror != null)
+            {
+                SetIsCanMirrorPosition(true);
+            }
+        }
+
+        // 좌 드래그 이벤트
+        if (Mouse.current.leftButton.isPressed)
+        {
+            if (_isCanMirrorPosition)
+            {
+                SetMirrorPosition();
+            }
+        }
+
+        // 좌클릭 뗌 이벤트
+        if (Mouse.current.leftButton.wasReleasedThisFrame)
+        {
+            SetIsCanMirrorPosition(false);
+        }
+
+        // 우 클릭 이벤트
+        if (Mouse.current.rightButton.wasPressedThisFrame)
+        {
+            if (currentSelectedMirror != null)
+            {
+                SetIsCanMirrorRotation(true);
+            }
+        }
+
+        // 우 클릭 이벤트
+        if (Mouse.current.rightButton.isPressed)
+        {
+            if (_isCanMirrorRotation)
+            {
+                SetMirrorRotation();
+            }
+        }
+
+        // 우 클릭 뗌 이벤트
+        if (Mouse.current.rightButton.wasReleasedThisFrame)
+        {
+            SetIsCanMirrorRotation(false);
+        }
+    }
+
+    private void SetIsCanMirrorPosition(bool isOn)
+    {
+        _isCanMirrorPosition = isOn;
+    }
+
+    private void SetIsCanMirrorRotation(bool isOn)
+    {
+        _isCanMirrorRotation = isOn;
+    }
+
+    private void ChangeGizmoMode()
+    {
+        gizmoMode = gizmoMode == EGizmoMode.XRot ? EGizmoMode.YRot : EGizmoMode.XRot;
+        Debug.Log($"[Mirror] gizmo mode {gizmoMode}");
+
+        currentSelectedMirror?.RefreshMaterial();
+    }
+
+    private void SetMirrorPosition()
+    {
+        Ray ray = cam_main.ScreenPointToRay(Mouse.current.position.ReadValue());
+        if (!Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, _wallMask))
+        {
+            return;
+        }
+
+        Transform tr = currentSelectedMirror.transform;
+        Quaternion normalDelta = Quaternion.FromToRotation(tr.up, hit.normal);
+        tr.SetPositionAndRotation(hit.point, normalDelta * tr.rotation);
+
+        EventRefresh();
+    }
+
+    private void SetMirrorRotation()
+    {
+        Vector2 delta = Mouse.current.delta.ReadValue();
+        float wheel = Mouse.current.scroll.ReadValue().y;
+
+        Transform tr = currentSelectedMirror.transform;
+        if (gizmoMode == EGizmoMode.XRot)
+        {
+            tr.Rotate(Vector3.right, delta.y * dragRotateSpeed, Space.Self);
+        }
+        else
+        {
+            tr.Rotate(Vector3.up, delta.x * dragRotateSpeed, Space.Self);
+        }
+        // tr.Rotate(Vector3.forward, wheel * wheelRotateSpeed, Space.World);
+
+        EventRefresh();
     }
 
     private void CreateMirror()
@@ -66,8 +194,12 @@ public class MirrorManager : MonoSingleton<MirrorManager>
         }
 
         Quaternion rotation = Quaternion.FromToRotation(Vector3.up, hit.normal);
-        Instantiate(obj_mirrorPrefab, hit.point, rotation, tr_mirrorRoot);
+        GameObject mirror = Instantiate(obj_mirrorPrefab, hit.point, rotation, tr_mirrorRoot);
         _spawnedCount++;
+
+        currentSelectedMirror?.SetEditMode(false);
+        currentSelectedMirror = mirror.GetComponent<MirrorController>();
+        currentSelectedMirror.SetEditMode(true);
 
         Debug.Log("[Mirror] crated " + _spawnedCount);
         EventRefresh();
@@ -77,13 +209,35 @@ public class MirrorManager : MonoSingleton<MirrorManager>
     {
         for (int i = tr_mirrorRoot.childCount - 1; i >= 0; i--)
         {
-            Destroy(tr_mirrorRoot.GetChild(i).gameObject);
+            GameObject mirror = tr_mirrorRoot.GetChild(i).gameObject;
+            mirror.SetActive(false);
+            Destroy(mirror);
         }
 
         _spawnedCount = 0;
-        _selectedMirror = null;
+        currentSelectedMirror = null;
+        SetIsCanMirrorPosition(false);
+        SetIsCanMirrorRotation(false);
 
         Debug.Log("[Mirror] clear all");
+        EventRefresh();
+    }
+
+    private void DeleteMirror()
+    {
+        if (currentSelectedMirror == null)
+        {
+            return;
+        }
+
+        currentSelectedMirror.gameObject.SetActive(false);
+        Destroy(currentSelectedMirror.gameObject);
+        currentSelectedMirror = null;
+        _spawnedCount--;
+        SetIsCanMirrorPosition(false);
+        SetIsCanMirrorRotation(false);
+
+        Debug.Log("[Mirror] delete");
         EventRefresh();
     }
 
@@ -93,7 +247,7 @@ public class MirrorManager : MonoSingleton<MirrorManager>
         OnMirrorChanged?.Invoke();
     }
 
-    private void EditMirror()
+    private MirrorController EditMirror()
     {
         Ray ray = cam_main.ScreenPointToRay(Mouse.current.position.ReadValue());
         MirrorController hitMirror = null;
@@ -105,16 +259,21 @@ public class MirrorManager : MonoSingleton<MirrorManager>
         }
 
         // 이미 선택되어 있는 Mirror라면 pass
-        if (hitMirror == _selectedMirror) return;
+        if (hitMirror == currentSelectedMirror)
+        {
+            return hitMirror;
+        }
 
         // 이미 선택되어있던 Mirror의 Edit Mode Off
-        if (_selectedMirror != null)
+        if (currentSelectedMirror != null)
         {
-            _selectedMirror.SetEditMode(false);
+            currentSelectedMirror.SetEditMode(false);
         }
 
         // 선택한 Mirror의 Edit Mode On
         hitMirror?.SetEditMode(true);
-        _selectedMirror = hitMirror;
+        currentSelectedMirror = hitMirror;
+
+        return hitMirror;
     }
 }
