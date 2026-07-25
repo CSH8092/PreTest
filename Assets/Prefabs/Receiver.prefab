@@ -46,6 +46,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ReceiverManager
   currentState: 0
+  prefab_effect: {fileID: 2017006980203272, guid: d53f987f04a166e3e1f0069b618fb11d,
+    type: 3}
 --- !u!1 &8686665157975014494
 GameObject:
   m_ObjectHideFlags: 0

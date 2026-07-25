@@ -74,6 +74,12 @@ public class MirrorManager : MonoSingleton<MirrorManager>
             ChangeGizmoMode();
         }
 
+        // 선택된 Mirror 회전 초기화
+        if (Keyboard.current.rKey.wasPressedThisFrame)
+        {
+            ResetSelectedMirrorRotation();
+        }
+
         // 좌 클릭 이벤트
         if (Mouse.current.leftButton.wasPressedThisFrame)
         {
@@ -151,9 +157,8 @@ public class MirrorManager : MonoSingleton<MirrorManager>
             return;
         }
 
-        Transform tr = currentSelectedMirror.transform;
-        Quaternion normalDelta = Quaternion.FromToRotation(tr.up, hit.normal);
-        tr.SetPositionAndRotation(hit.point, normalDelta * tr.rotation);
+        currentSelectedMirror.AlignToWallNormal(hit.normal);
+        currentSelectedMirror.transform.position = hit.point;
 
         EventRefresh();
     }
@@ -220,6 +225,19 @@ public class MirrorManager : MonoSingleton<MirrorManager>
         SetIsCanMirrorRotation(false);
 
         Debug.Log("[Mirror] clear all");
+        EventRefresh();
+    }
+
+    private void ResetSelectedMirrorRotation()
+    {
+        if (currentSelectedMirror == null)
+        {
+            return;
+        }
+
+        currentSelectedMirror.ResetRotation();
+
+        Debug.Log("[Mirror] reset rotation");
         EventRefresh();
     }
 
