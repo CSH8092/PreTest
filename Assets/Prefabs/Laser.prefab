@@ -62,7 +62,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 79459efec17a4d00a321bdcc27bbc385, type: 2}
+  - {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -347,8 +347,17 @@ MonoBehaviour:
   tr_upper: {fileID: 3689517278919079049}
   cam_main: {fileID: 0}
   textHeightOffset: 5
+  color_maxBounce: {r: 1, g: 0, b: 0, a: 1}
+  emissionIntensity_maxBounce: 6
+  colorTweenDuration: 2
+  shakeDuration: 0.4
+  shakePositionStrength: 0.15
+  shakeScaleStrength: 0.25
+  shakeVibrato: 10
+  prefab_effect: {fileID: 2017006980203272, guid: d53f987f04a166e3e1f0069b618fb11d, type: 3}
   currentReceiver: {fileID: 0}
   currentBounceCount: 0
+  currentState: 0
 --- !u!1 &3724730832215689238
 GameObject:
   m_ObjectHideFlags: 0
