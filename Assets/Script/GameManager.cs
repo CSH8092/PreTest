@@ -33,6 +33,8 @@ public class GameManager : MonoSingleton<GameManager>
     private Vignette _vignette;
     private Tween _vignetteTween;
     private Sequence _idlePulseSequence;
+    private Sequence _idlePulseAnimSequence;
+    private bool _wasAllSuccess;
 
     protected override void Awake()
     {
@@ -68,6 +70,7 @@ public class GameManager : MonoSingleton<GameManager>
     private void OnDestroy()
     {
         _idlePulseSequence?.Kill();
+        _idlePulseAnimSequence?.Kill();
     }
 
     private void StartHowtoIdlePulse()
@@ -88,7 +91,8 @@ public class GameManager : MonoSingleton<GameManager>
         Transform tr = button_howto.transform;
         float halfDuration = idlePulseDuration * 0.5f;
 
-        DOTween.Sequence()
+        _idlePulseAnimSequence?.Kill();
+        _idlePulseAnimSequence = DOTween.Sequence()
             .Append(tr.DOScale(1f + idlePulseScale, halfDuration).SetEase(Ease.InOutSine))
             .Join(tr.DOLocalRotate(new Vector3(0f, 0f, idlePulseRotationZ), halfDuration).SetEase(Ease.InOutSine))
             .Append(tr.DOScale(1f, halfDuration).SetEase(Ease.InOutSine))
@@ -115,6 +119,7 @@ public class GameManager : MonoSingleton<GameManager>
         {
             // 한 번이라도 열렸다면 더 이상 idle pulse 필요 없음
             _idlePulseSequence?.Kill();
+            _idlePulseAnimSequence?.Kill();
         }
     }
 
@@ -162,14 +167,20 @@ public class GameManager : MonoSingleton<GameManager>
     {
         bool isAllSuccess = IsAllReceiverSuccess();
 
-        if (isAllSuccess)
+        // 상태 전이 감지
+        if (isAllSuccess != _wasAllSuccess)
         {
-            Debug.Log("all receiver successed");
-            ToastController.Instance.Open("You Have Successfully Achieved the Goal!");
-        }
-        else
-        {
-            ToastController.Instance.Close();
+            if (isAllSuccess)
+            {
+                Debug.Log("all receiver successed");
+                ToastController.Instance.Open("You Have Successfully Achieved the Goal!");
+            }
+            else
+            {
+                ToastController.Instance.Close();
+            }
+
+            _wasAllSuccess = isAllSuccess;
         }
 
         SetVignetteIntensity(isAllSuccess ? vignetteIntensity_success : vignetteIntensity_default);
