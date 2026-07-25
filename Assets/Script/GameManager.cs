@@ -21,11 +21,18 @@ public class GameManager : MonoSingleton<GameManager>
     [SerializeField] private float vignetteIntensity_default = 0.2f;
     [SerializeField] private float vignetteTweenDuration = 0.5f;
 
+    [Header("Howto Idle Pulse : panel_howto가 off일 때")]
+    [SerializeField] private float idlePulseInterval = 5f;
+    [SerializeField] private float idlePulseScale = 0.1f; // 1 + 이 값만큼 커짐
+    [SerializeField] private float idlePulseRotationZ = 10f;
+    [SerializeField] private float idlePulseDuration = 0.5f;
+
     private static readonly Color ButtonHowtoInactiveColor = Color.white; // #FFFFFF
     private static readonly Color ButtonHowtoActiveColor = new Color(0.6f, 0.6f, 0.6f); // #999999
 
     private Vignette _vignette;
     private Tween _vignetteTween;
+    private Sequence _idlePulseSequence;
 
     protected override void Awake()
     {
@@ -55,6 +62,37 @@ public class GameManager : MonoSingleton<GameManager>
     private void Start()
     {
         RefreshCurrentStateText();
+        StartHowtoIdlePulse();
+    }
+
+    private void OnDestroy()
+    {
+        _idlePulseSequence?.Kill();
+    }
+
+    private void StartHowtoIdlePulse()
+    {
+        _idlePulseSequence = DOTween.Sequence()
+            .AppendInterval(idlePulseInterval)
+            .AppendCallback(PlayHowtoIdlePulse)
+            .SetLoops(-1);
+    }
+
+    private void PlayHowtoIdlePulse()
+    {
+        if (panel_howto.activeSelf)
+        {
+            return;
+        }
+
+        Transform tr = button_howto.transform;
+        float halfDuration = idlePulseDuration * 0.5f;
+
+        DOTween.Sequence()
+            .Append(tr.DOScale(1f + idlePulseScale, halfDuration).SetEase(Ease.InOutSine))
+            .Join(tr.DOLocalRotate(new Vector3(0f, 0f, idlePulseRotationZ), halfDuration).SetEase(Ease.InOutSine))
+            .Append(tr.DOScale(1f, halfDuration).SetEase(Ease.InOutSine))
+            .Join(tr.DOLocalRotate(Vector3.zero, halfDuration).SetEase(Ease.InOutSine));
     }
 
     private void OnEnable()
@@ -72,6 +110,12 @@ public class GameManager : MonoSingleton<GameManager>
         bool isActive = !panel_howto.activeSelf;
         panel_howto.SetActive(isActive);
         button_howto.image.color = isActive ? ButtonHowtoActiveColor : ButtonHowtoInactiveColor;
+
+        if (isActive)
+        {
+            // 한 번이라도 열렸다면 더 이상 idle pulse 필요 없음
+            _idlePulseSequence?.Kill();
+        }
     }
 
     private void RefreshCurrentStateText()
@@ -121,6 +165,11 @@ public class GameManager : MonoSingleton<GameManager>
         if (isAllSuccess)
         {
             Debug.Log("all receiver successed");
+            ToastController.Instance.Open("You Have Successfully Achieved the Goal!");
+        }
+        else
+        {
+            ToastController.Instance.Close();
         }
 
         SetVignetteIntensity(isAllSuccess ? vignetteIntensity_success : vignetteIntensity_default);

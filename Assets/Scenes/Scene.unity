@@ -3458,6 +3458,10 @@ MonoBehaviour:
   vignetteIntensity_success: 0.6
   vignetteIntensity_default: 0.2
   vignetteTweenDuration: 0.5
+  idlePulseInterval: 3
+  idlePulseScale: 0.5
+  idlePulseRotationZ: -10
+  idlePulseDuration: 1
 --- !u!4 &5539928314570001
 Transform:
   m_ObjectHideFlags: 0
@@ -3691,8 +3695,8 @@ SceneRoots:
   - {fileID: 330585546}
   - {fileID: 410087041}
   - {fileID: 832575519}
+  - {fileID: 1586584794}
   - {fileID: 2064494201}
+  - {fileID: 575080459}
   - {fileID: 2056231785}
   - {fileID: 5539928314570001}
-  - {fileID: 1586584794}
-  - {fileID: 575080459}

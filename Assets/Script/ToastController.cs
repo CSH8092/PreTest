@@ -18,7 +18,7 @@ public class ToastController : MonoSingleton<ToastController>
     [SerializeField] private float hideDuration = 0.3f;
     [SerializeField] private float holdDuration = 1f;
 
-    private Sequence _sequence;
+    private Tween _tween;
 
     protected override void Awake()
     {
@@ -31,14 +31,32 @@ public class ToastController : MonoSingleton<ToastController>
 
     public void Open(string message, MirrorManager.EGizmoMode mode)
     {
-        _sequence?.Kill();
+        Sprite icon = mode == MirrorManager.EGizmoMode.Pitch ? icon_x : icon_y;
+        Open(message, icon);
+    }
+
+    public void Open(string message)
+    {
+        Open(message, null);
+    }
+
+    private void Open(string message, Sprite icon)
+    {
+        _tween?.Kill();
 
         text_message.text = message;
-        image_icon.sprite = mode == MirrorManager.EGizmoMode.Pitch ? icon_x : icon_y;
+        image_icon.sprite = icon;
+        image_icon.gameObject.SetActive(icon != null);
 
-        _sequence = DOTween.Sequence()
+        _tween = DOTween.Sequence()
             .Append(rt_toast.DOAnchorPosY(shownY, showDuration))
             .AppendInterval(holdDuration)
             .Append(rt_toast.DOAnchorPosY(hiddenY, hideDuration));
+    }
+
+    public void Close()
+    {
+        _tween?.Kill();
+        _tween = rt_toast.DOAnchorPosY(hiddenY, hideDuration);
     }
 }

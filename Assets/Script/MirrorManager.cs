@@ -53,7 +53,7 @@ public class MirrorManager : MonoSingleton<MirrorManager>
 
     private void Start()
     {
-        ShowGizmoModeToast();
+        ToastController.Instance.Open("Press M Key to Create a Mirror.");
     }
 
     private void Update()
@@ -252,6 +252,7 @@ public class MirrorManager : MonoSingleton<MirrorManager>
         SetIsCanMirrorRotation(false);
 
         Debug.Log("[Mirror] clear all");
+        ToastController.Instance.Open("Clear All Mirror");
         EventRefresh();
     }
 
@@ -265,6 +266,7 @@ public class MirrorManager : MonoSingleton<MirrorManager>
         currentSelectedMirror.ResetRotation();
 
         Debug.Log("[Mirror] reset rotation");
+        ToastController.Instance.Open("Reset Selected Mirror Rotation");
         EventRefresh();
     }
 
@@ -283,6 +285,7 @@ public class MirrorManager : MonoSingleton<MirrorManager>
         SetIsCanMirrorRotation(false);
 
         Debug.Log("[Mirror] delete");
+        ToastController.Instance.Open("Delete Selected Mirror");
         EventRefresh();
     }
 

@@ -311,4 +311,4 @@ MonoBehaviour:
   shownY: 117
   showDuration: 0.3
   hideDuration: 0.3
-  holdDuration: 5
+  holdDuration: 3
