@@ -1,31 +1,44 @@
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class LaserManager : MonoBehaviour
 {
     [SerializeField] private LineRenderer line_laser;
     [SerializeField] private Transform tr_muzzle;
-    
+
     [Header("Settings")]
     [SerializeField] private int maxMirrorBounces = 10; // 최대 튕길 횟수
     [SerializeField] private float maxRayDistance = 200f; // max ray 길이
     [SerializeField] private float notHitDistance = 50f; // 미충돌 시 ray 길이
     [SerializeField] private float laserOffset = 0.05f; // laser 여유 값
 
+    [Header("Text")]
+    [SerializeField] private TextMeshPro text_current;
+    [SerializeField] private Transform tr_upper;
+    [SerializeField] private Camera cam_main;
+    [SerializeField] private float textHeightOffset = 5f;
+
     private int _wallLayer;
     private int _mirrorLayer;
     private int _receiverLayer;
     private int _hitMask;
-    
+
     private readonly List<Vector3> _points = new List<Vector3>();
 
     [Header("Debug")]
     [SerializeField] private ReceiverManager currentReceiver;
     [SerializeField] private int currentBounceCount;
-    
+    public int CurrentBounceCount => currentBounceCount;
+
     private void Awake()
     {
         line_laser.useWorldSpace = true;
+
+        if (cam_main == null)
+        {
+            cam_main = Camera.main;
+        }
 
         // hit mask setting
         _wallLayer = LayerMask.NameToLayer(ConstData.WallLayer);
@@ -37,7 +50,14 @@ public class LaserManager : MonoBehaviour
     private void Start()
     {
         // 최초 1회 실행
+        UpdateTextTransform();
         RecalculatePath();
+    }
+
+    private void UpdateTextTransform()
+    {
+        text_current.transform.position = tr_upper.position + Vector3.up * textHeightOffset;
+        text_current.transform.rotation = cam_main.transform.rotation;
     }
 
     private void OnEnable()
@@ -59,6 +79,7 @@ public class LaserManager : MonoBehaviour
         _points.Add(origin);
 
         int mirrorBounces = 0;
+        bool isMaxBounce = false;
         ReceiverManager hitReceiver = null;
         for (int i = 0; i < maxMirrorBounces + 1; i++)
         {
@@ -67,7 +88,7 @@ public class LaserManager : MonoBehaviour
             {
                 _points.Add(hit.point);
                 int layer = hit.collider.gameObject.layer;
-            
+
                 // case1. mirror 충돌
                 if (layer == _mirrorLayer)
                 {
@@ -75,6 +96,7 @@ public class LaserManager : MonoBehaviour
                     if (mirrorBounces > maxMirrorBounces)
                     {
                         Debug.LogWarning($"[Laser] max bounces ({maxMirrorBounces})");
+                        isMaxBounce = true;
                         break;
                     }
 
@@ -106,6 +128,8 @@ public class LaserManager : MonoBehaviour
         }
         currentReceiver = hitReceiver;
         currentBounceCount = mirrorBounces;
+
+        text_current.text = isMaxBounce ? "Max Bounce Warning!" : $"{mirrorBounces}/{maxMirrorBounces}";
 
         line_laser.positionCount = _points.Count;
         line_laser.SetPositions(_points.ToArray());

@@ -307,7 +307,7 @@ MonoBehaviour:
   image_icon: {fileID: 2015456058030774800}
   icon_x: {fileID: 21300000, guid: 9398a566749ceb74b85880a5edb24499, type: 3}
   icon_y: {fileID: 21300000, guid: 5ba7828f28c213d46b7574ae99fe4a38, type: 3}
-  hiddenY: -10
+  hiddenY: -20
   shownY: 117
   showDuration: 0.3
   hideDuration: 0.3

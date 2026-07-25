@@ -59,6 +59,6 @@ public class MirrorController : MonoBehaviour
             return;
         }
 
-        _renderer.material = MirrorManager.Instance.GizmoMode == MirrorManager.EGizmoMode.XRot ? mat_highlight1 : mat_highlight2;
+        _renderer.material = MirrorManager.Instance.GizmoMode == MirrorManager.EGizmoMode.Pitch ? mat_highlight1 : mat_highlight2;
     }
 }

@@ -34,7 +34,7 @@ public class ToastController : MonoSingleton<ToastController>
         _sequence?.Kill();
 
         text_message.text = message;
-        image_icon.sprite = mode == MirrorManager.EGizmoMode.XRot ? icon_x : icon_y;
+        image_icon.sprite = mode == MirrorManager.EGizmoMode.Pitch ? icon_x : icon_y;
 
         _sequence = DOTween.Sequence()
             .Append(rt_toast.DOAnchorPosY(shownY, showDuration))

@@ -9,7 +9,10 @@ public abstract class MonoSingleton<T> : MonoBehaviour where T : MonoBehaviour
         if (Instance != null && Instance != this)
         {
             Debug.LogError($"[Singleton] {typeof(T).Name} : duplicate");
+            Destroy(gameObject);
+            return;
         }
+
         Instance = this as T;
     }
 }

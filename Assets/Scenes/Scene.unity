@@ -1196,7 +1196,7 @@ GameObject:
   - component: {fileID: 669601444}
   - component: {fileID: 669601446}
   m_Layer: 5
-  m_Name: panel_current_state
+  m_Name: panel_debug
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1220,7 +1220,7 @@ RectTransform:
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
   m_AnchoredPosition: {x: -40, y: 40}
-  m_SizeDelta: {x: 250, y: 340}
+  m_SizeDelta: {x: 346, y: 144}
   m_Pivot: {x: 1, y: 0}
 --- !u!114 &669601444
 MonoBehaviour:
@@ -1623,7 +1623,7 @@ GameObject:
   m_Component:
   - component: {fileID: 832575519}
   - component: {fileID: 832575518}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Global Volume
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2186,10 +2186,10 @@ MonoBehaviour:
     Drag : Set Mirror Position
 
     Mouse <color=#ffffff><b>Right</b></color> Drag
-    : Set Mirror Rotation (<color=#00CED1><b>X</b></color> / <color=#EEDD82><b>Y</b></color>)
+    : Set Mirror Rotation (<color=#00CED1><b>Pitch</b></color> / <color=#EEDD82><b>Yaw</b></color>)
 
     Mouse
-    <color=#ffffff><b>Wheel</b></color> Drag : Set Mirror Rotation (Z)'
+    <color=#ffffff><b>Wheel</b></color> Drag : Set Mirror Rotation (Roll)'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -2370,7 +2370,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: == Current Info ==
+  m_text: Debug
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -2379,8 +2379,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4278255360
+  m_fontColor: {r: 0, g: 1, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -2397,8 +2397,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 22
-  m_fontSizeBase: 22
+  m_fontSize: 18
+  m_fontSizeBase: 18
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -3073,7 +3073,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 40, y: -150}
-  m_SizeDelta: {x: 535, y: 300}
+  m_SizeDelta: {x: 562, y: 300}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &2010684683
 MonoBehaviour:
@@ -3454,6 +3454,9 @@ MonoBehaviour:
   button_howto: {fileID: 860299703}
   panel_howto: {fileID: 2010684681}
   text_current_state: {fileID: 1393598780}
+  volume_global: {fileID: 832575518}
+  vignetteIntensity_success: 0.6
+  vignetteIntensity_default: 0.2
 --- !u!4 &5539928314570001
 Transform:
   m_ObjectHideFlags: 0
@@ -3477,6 +3480,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 2064494201}
     m_Modifications:
+    - target: {fileID: 3142412895105623668, guid: 067fbde3b3069df49a9a14fb12b114d7, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
     - target: {fileID: 3566560226398133025, guid: 067fbde3b3069df49a9a14fb12b114d7, type: 3}
       propertyPath: m_LocalPosition.x
       value: -7.6800003
@@ -3524,7 +3531,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 584766340318256618, guid: 067fbde3b3069df49a9a14fb12b114d7, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: 067fbde3b3069df49a9a14fb12b114d7, type: 3}
 --- !u!1001 &6736294800129099461
 PrefabInstance:

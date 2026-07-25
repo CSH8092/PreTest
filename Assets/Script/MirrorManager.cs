@@ -6,14 +6,16 @@ public class MirrorManager : MonoSingleton<MirrorManager>
 {
     public enum EGizmoMode
     {
-        XRot,
-        YRot
+        Pitch,
+        Yaw
     }
 
     public static event Action OnMirrorChanged;
 
     public EGizmoMode GizmoMode => gizmoMode;
     public int SpawnedCount => _spawnedCount;
+    public int MaxMirrors => maxMirrors;
+    public bool HasSelection => currentSelectedMirror != null;
 
     [SerializeField] private GameObject obj_mirrorPrefab;
     [SerializeField] private Camera cam_main;
@@ -23,7 +25,7 @@ public class MirrorManager : MonoSingleton<MirrorManager>
     [SerializeField] private int maxMirrors = 30;
 
     [Header("Gizmo")]
-    [SerializeField] private EGizmoMode gizmoMode = EGizmoMode.XRot;
+    [SerializeField] private EGizmoMode gizmoMode = EGizmoMode.Pitch;
     [SerializeField] private float dragRotateSpeed = 0.2f;
     [SerializeField] private float wheelRotateSpeed = 1f;
 
@@ -46,7 +48,12 @@ public class MirrorManager : MonoSingleton<MirrorManager>
         }
 
         _wallMask = 1 << LayerMask.NameToLayer(ConstData.WallLayer);
-        _mirrorMask = 1 << LayerMask.NameToLayer(ConstData.MirrorLayer);
+        _mirrorMask = 1 << LayerMask.NameToLayer(ConstData.MirrorSelectLayer);
+    }
+
+    private void Start()
+    {
+        ShowGizmoModeToast();
     }
 
     private void Update()
@@ -98,6 +105,8 @@ public class MirrorManager : MonoSingleton<MirrorManager>
             {
                 SetIsCanMirrorPosition(true);
             }
+
+            EventRefresh();
         }
 
         // 좌 드래그 이벤트
@@ -152,15 +161,21 @@ public class MirrorManager : MonoSingleton<MirrorManager>
 
     private void ChangeGizmoMode()
     {
-        gizmoMode = gizmoMode == EGizmoMode.XRot ? EGizmoMode.YRot : EGizmoMode.XRot;
+        gizmoMode = gizmoMode == EGizmoMode.Pitch ? EGizmoMode.Yaw : EGizmoMode.Pitch;
         Debug.Log($"[Mirror] gizmo mode {gizmoMode}");
 
         currentSelectedMirror?.RefreshMaterial();
+        ShowGizmoModeToast();
 
-        string mode = gizmoMode == EGizmoMode.XRot ? "X" : "Y";
-        string direction = gizmoMode == EGizmoMode.XRot ? "Upside down" : "Left and Right";
-        string color = gizmoMode == EGizmoMode.XRot ? ConstData.GizmoModeColorX : ConstData.GizmoModeColorY;
-        ToastController.Instance.Open($"Rot Mode <color={color}><b>{mode}</b></color> Changed. Please Mouse Right Drag <color={color}><b>{direction}</b></color>.", gizmoMode);
+        EventRefresh();
+    }
+
+    private void ShowGizmoModeToast()
+    {
+        string mode = gizmoMode == EGizmoMode.Pitch ? "Pitch" : "Yaw";
+        string direction = gizmoMode == EGizmoMode.Pitch ? "Upside down" : "Left and Right";
+        string color = gizmoMode == EGizmoMode.Pitch ? ConstData.GizmoModeColorX : ConstData.GizmoModeColorY;
+        ToastController.Instance.Open($"Rot Mode <color={color}><b>{mode}</b></color> Set. Please Mouse Right Drag <color={color}><b>{direction}</b></color>.", gizmoMode);
     }
 
     private void SetMirrorPosition()
@@ -182,7 +197,7 @@ public class MirrorManager : MonoSingleton<MirrorManager>
         Vector2 delta = Mouse.current.delta.ReadValue();
 
         Transform tr = currentSelectedMirror.transform;
-        if (gizmoMode == EGizmoMode.XRot)
+        if (gizmoMode == EGizmoMode.Pitch)
         {
             tr.Rotate(Vector3.right, delta.y * dragRotateSpeed, Space.Self);
         }
