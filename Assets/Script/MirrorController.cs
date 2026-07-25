@@ -34,8 +34,8 @@ public class MirrorController : MonoBehaviour
 
     public void ResetRotation()
     {
-        transform.rotation = _initialRotation;
-        _lastWallNormal = null;
+        // 한 번도 안 옮겼으면 생성 시점 벽 기준, 옮긴 적 있으면 현재 붙어있는 벽 기준으로 초기화
+        transform.rotation = _lastWallNormal != null ? Quaternion.FromToRotation(Vector3.up, _lastWallNormal.Value) : _initialRotation;
     }
 
     public void SetEditMode(bool value)

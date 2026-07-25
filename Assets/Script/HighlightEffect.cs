@@ -54,6 +54,11 @@ public class HighlightEffect : MonoBehaviour
         _colorTween?.Kill();
         _emissionTween?.Kill();
 
+        // 이전 shake가 진행 중이었다면 겹치지 않도록 정리하고 원위치에서 새로 시작
+        transform.DOKill();
+        transform.localPosition = _originalLocalPosition;
+        transform.localScale = _originalLocalScale;
+
         _mat.EnableKeyword("_EMISSION");
         _colorTween = _mat.DOColor(color, "_BaseColor", colorTweenDuration);
         _emissionTween = DOTween.To(() => _emissionIntensity, SetEmissionIntensity, emissionIntensity, colorTweenDuration);
