@@ -1,30 +1,42 @@
-# Deepfine 입사 지원자 대상 사전 과제
-Edit. 2025-12-17
+## 플레이 사진
+<img width="1260" height="706" alt="image" src="https://github.com/user-attachments/assets/64828964-e1da-440a-a2fe-9d6e38bb3b17" />
 
 
-## 1. 개요
-최근 AI 활용이 보편화되면서 단순 코드 완성도만으로는 평가가 어렵습니다.  
-본 과제는 구현 과정에서 드러나는 **프로그래밍 스타일, 구조 설계, 확장 가능성, 디자인 패턴 활용, 디버깅/테스트 관점** 등을 종합적으로 확인하기 위한 목적입니다.
-하여 요구 사항대로 정상 작동과 함께 프로젝트 구성에 중점을 두고 있습니다.
+## 구조 요약
 
-## 2. 목표
-플레이 타임에 Mirror(Prefab) 를 설치/조작하여, Laser가 발사되어 Receiver까지 도달하도록 시스템을 구현합니다.
-  
-## 3. 요구사항
-### 공통
-- 프로젝트 내 Laser, Mirror, Receiver에 자유롭게 아래 요구 사항을 구현합니다.
-- 사용 된 Unity는 6000.2.7f2
-### Laser
-- Collider가 있는 GameObject에 닿으면 충돌 지점까지 그려져야 합니다.
-- Mirror에 닿을 시 정반사가 됩니다.
-- 반사는 최대 10회까지 수행 되도록 제약 조건을 구현하여야 합니다.
-### Receiver
-- Laser가 Receiver에 닿으면 상태 변화가 발생해야 합니다. (상태 변화는 색상, 연출 등 자유)
-- Laser가 닿지 않으면 원래 상태로 자동 복귀해야 합니다.
-### Mirror
-- Mirror는 플레이 타임에 동적으로 공간 상 설치 가능해야 합니다. (클릭, 단축키, UI 버튼 등 자유)
-- Mirror는 Position / Rotation 조작이 가능해야 합니다. (Gizmo, 드래그, 단축키 등 자유)
+- **MirrorManager** (싱글톤) : Mirror 생성/삭제/선택/편집 담당. Mirror 상태 변경 시 `OnMirrorChanged` 호출.
+- **MirrorController** : 개별 Mirror의 EditMode에 따른 Material Setting 관리.
+- **LaserManager** : 반사 경로 계산 및 Receiver 적중 시, Target Receiver의 `SetState()` 호출.
+- **ReceiverManager** : Idle/Success 상태 관리. 연출은 `HighlightEffect`사용.
+- **HighlightEffect** : 색상 및 Shake 연출 컴포넌트. (Receiver 및 Laser 공통 사용)
+- **GameManager** (싱글톤) : UI 및 Receiver 관리. All Receiver Success 판정의 연출 담당.
+- **ToastController** (싱글톤) : 2D UI 토스트 메시지 출력 담당.
 
-## 4. 제출물
-- 본 Git Repo를 Fork해서 본인 계정의 Git에서 수행 후 링크 공유.
-- README를 통해 간단한 구조 설명 및 조작 방법 공유
+***Mirror 조작 → OnMirrorChanged → Laser 경로 재계산 → Receiver 적중/이탈 → GameManager 판정***
+
+## 조작 방법
+
+좌측 상단 Help Button 클릭으로 확인 가능
+<img width="367" height="278" alt="image" src="https://github.com/user-attachments/assets/85e4bc0b-b7fc-4f2a-a0c8-4ce529b59eb6" />
+
+| 입력 | 동작 |
+| --- | --- |
+| `M` | Mirror 생성 |
+| `R` | 선택된 Mirror 회전 초기화 |
+| `Delete` | 선택된 Mirror 삭제 |
+| `C` | 모든 Mirror 삭제 |
+| `Tab` | 회전 모드 전환 (Pitch / Yaw) |
+| 좌클릭 | Mirror 선택 |
+| 좌클릭 드래그 | 위치 이동 |
+| 우클릭 드래그 | 회전 (X / Y) |
+| 마우스 휠 | 회전 (Z) |
+
+## 소요 시간
+약 **8시간** 소요
+
+| 항목 | 시간 |
+| --- | --- |
+| 아키텍처 설계 | 30분 |
+| UI Sprite 제작 | 30분 |
+| 구현 및 버그 수정 | 약 6시간 |
+| 테스트 & 문서 작성 | 약 1시간 |
