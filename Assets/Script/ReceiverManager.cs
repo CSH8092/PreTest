@@ -33,6 +33,8 @@ public class ReceiverManager : MonoBehaviour
 
     private Color _originalBaseColor;
     private Color _originalEmissionColor;
+    private Vector3 _originalLocalPosition;
+    private Vector3 _originalLocalScale;
 
     private float _emissionIntensity;
     private Tween _colorTween;
@@ -40,17 +42,26 @@ public class ReceiverManager : MonoBehaviour
 
     private void Awake()
     {
+        GameManager.RegisterReceiver(this);
+
         _renderer = GetComponentInChildren<Renderer>();
         _mat = _renderer.material;
         _trSphere = _renderer.transform;
 
         _originalBaseColor = _mat.GetColor("_BaseColor");
         _originalEmissionColor = _mat.GetColor("_EmissionColor");
+        _originalLocalPosition = _trSphere.localPosition;
+        _originalLocalScale = _trSphere.localScale;
 
         if (prefab_effect != null)
         {
             _particleEffect = Instantiate(prefab_effect, _trSphere.position, Quaternion.identity, _trSphere);
         }
+    }
+
+    private void OnDestroy()
+    {
+        GameManager.UnregisterReceiver(this);
     }
 
     public void SetState(EState newState)
@@ -71,6 +82,8 @@ public class ReceiverManager : MonoBehaviour
         {
             StopSuccessEffect();
         }
+
+        GameManager.EventRefresh();
     }
     
     private void PlaySuccessEffect()
@@ -90,6 +103,10 @@ public class ReceiverManager : MonoBehaviour
     {
         if (currentState != EState.Success)
         {
+            // 원상복귀
+            _trSphere.DOKill();
+            _trSphere.localPosition = _originalLocalPosition;
+            _trSphere.localScale = _originalLocalScale;
             return;
         }
 
@@ -100,7 +117,7 @@ public class ReceiverManager : MonoBehaviour
     private void SetEmissionIntensity(float intensity)
     {
         _emissionIntensity = intensity;
-        _mat.SetColor("_EmissionColor", Color.white * intensity);
+        _mat.SetColor("_EmissionColor", Color.white * Mathf.Pow(2f, intensity));
     }
 
     private void StopSuccessEffect()

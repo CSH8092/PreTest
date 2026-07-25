@@ -61,8 +61,7 @@ public class ReceiverParticleEffet : MonoBehaviour
         psRenderer.renderMode = ParticleSystemRenderMode.Billboard;
         psRenderer.alignment = ParticleSystemRenderSpace.View;
     }
-
-    // idle로 바뀌면 StopLoop만 호출, 현재 사이클은 자연히 끝까지 재생된 뒤 멈춤
+    
     public void Play()
     {
         _isLooping = true;

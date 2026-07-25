@@ -13,6 +13,7 @@ public class MirrorManager : MonoSingleton<MirrorManager>
     public static event Action OnMirrorChanged;
 
     public EGizmoMode GizmoMode => gizmoMode;
+    public int SpawnedCount => _spawnedCount;
 
     [SerializeField] private GameObject obj_mirrorPrefab;
     [SerializeField] private Camera cam_main;
@@ -78,6 +79,14 @@ public class MirrorManager : MonoSingleton<MirrorManager>
         if (Keyboard.current.rKey.wasPressedThisFrame)
         {
             ResetSelectedMirrorRotation();
+        }
+
+        // 마우스 휠 zrot 이벤트
+        float wheel = Mouse.current.scroll.ReadValue().y;
+        if (wheel != 0f && currentSelectedMirror != null)
+        {
+            currentSelectedMirror.transform.Rotate(Vector3.forward, wheel * wheelRotateSpeed, Space.Self);
+            EventRefresh();
         }
 
         // 좌 클릭 이벤트
@@ -147,6 +156,11 @@ public class MirrorManager : MonoSingleton<MirrorManager>
         Debug.Log($"[Mirror] gizmo mode {gizmoMode}");
 
         currentSelectedMirror?.RefreshMaterial();
+
+        string mode = gizmoMode == EGizmoMode.XRot ? "X" : "Y";
+        string direction = gizmoMode == EGizmoMode.XRot ? "Upside down" : "Left and Right";
+        string color = gizmoMode == EGizmoMode.XRot ? ConstData.GizmoModeColorX : ConstData.GizmoModeColorY;
+        ToastController.Instance.Open($"Rot Mode <color={color}><b>{mode}</b></color> Changed. Please Mouse Right Drag <color={color}><b>{direction}</b></color>.", gizmoMode);
     }
 
     private void SetMirrorPosition()
@@ -166,7 +180,6 @@ public class MirrorManager : MonoSingleton<MirrorManager>
     private void SetMirrorRotation()
     {
         Vector2 delta = Mouse.current.delta.ReadValue();
-        float wheel = Mouse.current.scroll.ReadValue().y;
 
         Transform tr = currentSelectedMirror.transform;
         if (gizmoMode == EGizmoMode.XRot)
@@ -177,7 +190,6 @@ public class MirrorManager : MonoSingleton<MirrorManager>
         {
             tr.Rotate(Vector3.up, delta.x * dragRotateSpeed, Space.Self);
         }
-        // tr.Rotate(Vector3.forward, wheel * wheelRotateSpeed, Space.World);
 
         EventRefresh();
     }
