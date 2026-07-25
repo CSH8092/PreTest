@@ -84,6 +84,8 @@ public class LaserManager : MonoBehaviour
 
     public void RecalculatePath()
     {
+        Physics.SyncTransforms();
+
         _points.Clear();
 
         Vector3 direction = tr_muzzle.forward.normalized;
