@@ -12,12 +12,14 @@
 - **GameManager** (싱글톤) : UI 및 Receiver 관리. All Receiver Success 판정의 연출 담당.
 - **ToastController** (싱글톤) : 2D UI 토스트 메시지 출력 담당.
 
+<img width="1980" height="1408" alt="image" src="https://github.com/user-attachments/assets/7ecd33fa-d97b-4dc0-a5d6-13665757ee39" />
+
+
 ***Mirror 조작 → OnMirrorChanged → Laser 경로 재계산 → Receiver 적중/이탈 → GameManager 판정***
 
 ## 조작 방법
 
 좌측 상단 Help Button 클릭으로 확인 가능
-<img width="367" height="278" alt="image" src="https://github.com/user-attachments/assets/85e4bc0b-b7fc-4f2a-a0c8-4ce529b59eb6" />
 
 | 입력 | 동작 |
 | --- | --- |
@@ -40,3 +42,13 @@
 | UI Sprite 제작 | 30분 |
 | 구현 및 버그 수정 | 약 6시간 |
 | 테스트 & 문서 작성 | 약 1시간 |
+
+## 인게임
+### 미러 조작
+<img width="1260" height="705" alt="case_edit" src="https://github.com/user-attachments/assets/311f09c5-8ed0-4e86-8690-3f946bf8fad5" />
+
+### 반사 횟수 초과
+<img width="1260" height="705" alt="case_warning" src="https://github.com/user-attachments/assets/6abc0ebe-654e-4abc-81c1-2dc6f1b53e5a" />
+
+### 반사 성공
+<img width="1260" height="705" alt="case_done" src="https://github.com/user-attachments/assets/f7bfa1be-8058-41d4-99e4-e45f16b32728" />
